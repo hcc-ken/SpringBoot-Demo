@@ -1,7 +1,9 @@
 package com.digitechfp.demo_spring.config;
 
 import com.digitechfp.demo_spring.entity.Estudiante;
+import com.digitechfp.demo_spring.entity.Profesor;
 import com.digitechfp.demo_spring.repository.EstudianteRepository;
+import com.digitechfp.demo_spring.repository.ProfesorRepository;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -55,6 +57,52 @@ public class InicializadorDatos {
             System.out.println(">>>> Estudiante eliminado correctamente");
             for (Estudiante est : estudianteRepository.findAll()) {
                 System.out.println("- ID: " + est.getId() + ", Nombre: " + est.getNombre() + ", Correo: " + est.getCorreo() + ", Edad: " + est.getEdad());
+            }
+        };
+    }
+
+    @Bean
+    CommandLineRunner initDataP(ProfesorRepository profesorRepository) {
+        return args -> {
+            // INSERTAR PROFESORES
+            System.out.println(">>>> Insertando profesores");
+            Profesor profesor1 = new Profesor("Juan Pérez", "Base de datos", 15);
+            Profesor profesor2 = new Profesor("María López", "Programación", 8);
+            Profesor profesor3 = new Profesor("Carlos García", "Redes", 10);
+
+            profesorRepository.save(profesor1);
+            profesorRepository.save(profesor2);
+            profesorRepository.save(profesor3);
+
+            System.out.println(">>>> Profesores guardados correctamente en la BBDD");
+
+            // MODIFICANDO PROFESORES
+
+            System.out.println(">>>> Modificando datos");
+            Profesor profesorEncontrado = profesorRepository.findById(1L).orElseThrow();
+            profesorEncontrado.setNombreCompleto("Roberto Carlos Pérez");
+            profesorEncontrado.setEspecialidad("Inteligencia Artificial");
+            profesorEncontrado.setExperienciaAnios(20);
+
+            profesorRepository.save(profesorEncontrado);
+
+            System.out.println(">>>> Listando profesores guardados en la BBDD");
+            System.out.println("Actualizado: " + profesorRepository.findById(1L).orElse(null));
+
+            // BORRANDO PROFESORES
+
+            System.out.println(">>>> Borrando un profesor");
+            profesorRepository.deleteById(2L);
+            System.out.println(">>>> Profesor eliminado correctamente");
+            for (Profesor prof : profesorRepository.findAll()) {
+                System.out.println("- ID: " + prof.getId() + ", Nombre: " + prof.getNombreCompleto() + ", Especialidad: " + prof.getEspecialidad() + ", Experiencia: " + prof.getExperienciaAnios() + " años");
+            }
+
+            // MOSTRANDO PROFESORES RESTANTES
+
+            System.out.println(">>>> Listando profesores restantes en la BBDD");
+            for (Profesor prof : profesorRepository.findAll()) {
+                System.out.println("- ID: " + prof.getId() + ", Nombre: " + prof.getNombreCompleto() + ", Especialidad: " + prof.getEspecialidad() + ", Experiencia: " + prof.getExperienciaAnios() + " años");
             }
         };
     }
