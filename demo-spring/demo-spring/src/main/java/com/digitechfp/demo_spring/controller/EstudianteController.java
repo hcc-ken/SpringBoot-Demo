@@ -2,6 +2,7 @@ package com.digitechfp.demo_spring.controller;
 
 import com.digitechfp.demo_spring.entity.Estudiante;
 import com.digitechfp.demo_spring.service.EstudianteService;
+import org.apache.coyote.Request;
 import org.apache.coyote.Response;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -9,6 +10,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/v1/estudiantes")
@@ -70,5 +72,37 @@ public class EstudianteController {
                 .orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND)
                         .body(Collections.singletonMap("mensaje", "El estudiante no existe")));
     }
-    // Put actualiza completo, Patch actualiza los datos que se envian
+    //Patch actualiza los datos que se envian
+    @PatchMapping("/{id}")
+    public ResponseEntity<?> actualizarParcial(
+            @PathVariable Long id,
+            @RequestBody Map<String, Object> campos){
+        return estudianteService.buscarPorId(id)
+                .<ResponseEntity<?>>map(estudianteExistente -> {
+                    campos.forEach((campo, valor) -> {
+                        switch (campo) {
+                            case "nombre" -> estudianteExistente.setNombre((String) valor);
+                            case "edad" -> estudianteExistente.setEdad(((Number) valor).intValue());
+                            case "correo" -> estudianteExistente.setCorreo((String) valor);
+                        }
+                    });
+                    Estudiante actualizado =
+                            estudianteService.guardarEstudiante(estudianteExistente);
+                    return ResponseEntity.ok(actualizado);
+                })
+                .orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND)
+                        .body(Collections.singletonMap("mensaje", "El estudiante no existe")));
+    }
+
+    // Borrar
+    @DeleteMapping("/{id}")
+    public ResponseEntity<?> eliminarEstudiante(@PathVariable Long id){
+        if (estudianteService.buscarPorId(id).isPresent()){
+            estudianteService.eliminarEstudiante(id);
+            return ResponseEntity.ok(Collections.singletonMap("mensaje", "Estudiante eliminado correctamente"));
+        } else {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(Collections.singletonMap("mensaje", "El estudiante no existe"));
+        }
+    }
 }
