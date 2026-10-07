@@ -67,6 +67,8 @@ public class EstudianteController {
                             estudianteService.guardarEstudiante(estudianteExistente);
                     return ResponseEntity.ok(estudianteActualizado);
         })
+                .orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND)
+                        .body(Collections.singletonMap("mensaje", "El estudiante no existe")));
     }
     // Put actualiza completo, Patch actualiza los datos que se envian
 }
