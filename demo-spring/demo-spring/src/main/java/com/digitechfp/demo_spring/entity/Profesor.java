@@ -26,7 +26,7 @@ public class Profesor {
     private int experienciaAnios;
 
     @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-    @JoinColumn(name = "oficina_id", referencedColumnName = "id")
+    @JoinColumn(name = "oficina_id", referencedColumnName = "id") // Establecemos aqui en nombre de la ForeignKey
     private Oficina oficina;
 
     public Profesor(String nombreCompleto, String especialidad, int experienciaAnios, Oficina oficina) {
