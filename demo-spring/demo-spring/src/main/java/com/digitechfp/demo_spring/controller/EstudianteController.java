@@ -1,6 +1,7 @@
 package com.digitechfp.demo_spring.controller;
 
 import com.digitechfp.demo_spring.entity.Estudiante;
+import com.digitechfp.demo_spring.entity.PerfilAcademico;
 import com.digitechfp.demo_spring.service.EstudianteService;
 import org.apache.coyote.Request;
 import org.apache.coyote.Response;
@@ -65,6 +66,18 @@ public class EstudianteController {
                     estudianteExistente.setEdad(estudianteDatos.getEdad());
                     estudianteExistente.setCorreo(estudianteDatos.getCorreo());
 
+                    //Actualizamos los datos de relacion 1a1
+                    if (estudianteDatos.getPerfilAcademico() != null) {
+                        if (estudianteExistente.getPerfilAcademico() != null){
+                            estudianteExistente.getPerfilAcademico().setNivelIngles
+                                    (estudianteDatos.getPerfilAcademico().getNivelIngles());
+                            estudianteExistente.getPerfilAcademico().setBiografia
+                                    (estudianteDatos.getPerfilAcademico().getBiografia());
+                        } else {
+                            estudianteExistente.setPerfilAcademico(null);
+                        }
+                    }
+
                     Estudiante estudianteActualizado =
                             estudianteService.guardarEstudiante(estudianteExistente);
                     return ResponseEntity.ok(estudianteActualizado);
@@ -81,9 +94,31 @@ public class EstudianteController {
                 .<ResponseEntity<?>>map(estudianteExistente -> {
                     campos.forEach((campo, valor) -> {
                         switch (campo) {
-                            case "nombre" -> estudianteExistente.setNombre((String) valor);
-                            case "edad" -> estudianteExistente.setEdad(((Number) valor).intValue());
-                            case "correo" -> estudianteExistente.setCorreo((String) valor);
+                            case "nombre": estudianteExistente.setNombre((String) valor);
+                                break;
+                            case "edad": estudianteExistente.setEdad(((Number) valor).intValue());
+                                break;
+                            case "correo": estudianteExistente.setCorreo((String) valor);
+                                break;
+                            case "perfilAcademico":
+                                if (valor instanceof Map) {
+                                    @SuppressWarnings("unchecked")
+                                    Map<String, Object> datosPerfil = (Map<String, Object>) valor;
+                                    PerfilAcademico perfilAcademico = estudianteExistente.getPerfilAcademico();
+                                    if (perfilAcademico == null) {
+                                        perfilAcademico = new PerfilAcademico();
+                                        estudianteExistente.setPerfilAcademico(perfilAcademico);
+                                    }
+                                    if (datosPerfil.containsKey("biografia")) {
+                                        perfilAcademico.setBiografia((String) datosPerfil.get("biografia"));
+                                    }
+                                    if (datosPerfil.containsKey("nivelIngles")) {
+                                        perfilAcademico.setNivelIngles((String) datosPerfil.get("nivelIngles"));
+                                    }
+                                } else if (valor == null) {
+                                    estudianteExistente.setPerfilAcademico(null);
+                                }
+                                break;
                         }
                     });
                     Estudiante actualizado =

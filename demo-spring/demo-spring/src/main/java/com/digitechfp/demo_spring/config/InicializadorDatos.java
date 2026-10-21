@@ -1,9 +1,6 @@
 package com.digitechfp.demo_spring.config;
 
-import com.digitechfp.demo_spring.entity.Estudiante;
-import com.digitechfp.demo_spring.entity.Oficina;
-import com.digitechfp.demo_spring.entity.PerfilAcademico;
-import com.digitechfp.demo_spring.entity.Profesor;
+import com.digitechfp.demo_spring.entity.*;
 import com.digitechfp.demo_spring.repository.EstudianteRepository;
 import com.digitechfp.demo_spring.repository.ProfesorRepository;
 import org.springframework.boot.CommandLineRunner;
@@ -76,11 +73,17 @@ public class InicializadorDatos {
 
             // INSERTAR PROFESORES
             System.out.println(">>>> Insertando profesores");
-            Profesor profesor1 = new Profesor("Juan Pérez", "Base de datos", 15, oficina1);
+            Profesor profesor = new Profesor("Juan Pérez", "Base de datos", 15, oficina1);
             Profesor profesor2 = new Profesor("María López", "Programación", 8, oficina2);
             Profesor profesor3 = new Profesor("Carlos García", "Redes", 10, oficina3);
 
-            profesorRepository.save(profesor1);
+            Asignatura asignatura1 = new Asignatura("Proyecto Intermodular II", 3, profesor);
+            Asignatura asignatura2 = new Asignatura("Programación Avanzada", 4, profesor);
+
+            profesor.agregarAsignaturas(asignatura1);
+            profesor.agregarAsignaturas(asignatura2);
+
+            profesorRepository.save(profesor);
             profesorRepository.save(profesor2);
             profesorRepository.save(profesor3);
 
